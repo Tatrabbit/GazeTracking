@@ -19,6 +19,8 @@ class Eye(object):
         self.center = None
         self.pupil = None
         self.landmark_points = None
+        self.width = None
+        self.height = None
 
         self._analyze(original_frame, landmarks, side, calibration)
 
@@ -47,9 +49,9 @@ class Eye(object):
         self.landmark_points = region
 
         # Applying a mask to get only the eye
-        height, width = frame.shape[:2]
-        black_frame = np.zeros((height, width), np.uint8)
-        mask = np.full((height, width), 255, np.uint8)
+        self.height, self.width = frame.shape[:2]
+        black_frame = np.zeros((self.height, self.width), np.uint8)
+        mask = np.full((self.height, self.width), 255, np.uint8)
         cv2.fillPoly(mask, [region], (0, 0, 0))
         eye = cv2.bitwise_not(black_frame, frame.copy(), mask=mask)
 
