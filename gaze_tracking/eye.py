@@ -114,6 +114,6 @@ class Eye(object):
         self.blinking = self._blinking_ratio(landmarks, points)
         self._isolate(original_frame, landmarks, points)
 
-        calibration.evaluate(self.frame, side)
-        threshold = calibration.threshold(side)
+        calibration.evaluate(self.frame)
+        threshold = calibration.threshold()
         self.pupil = Pupil(self.frame, threshold)

@@ -17,7 +17,8 @@ class GazeTracking(object):
         self.gray_frame = None
         self.eye_left = None
         self.eye_right = None
-        self.calibration = Calibration()
+        self.calibration_left = Calibration()
+        self.calibration_right = Calibration()
 
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
@@ -58,8 +59,8 @@ class GazeTracking(object):
 
         self.landmarks = self._predict_landmarks()
         if self.landmarks is not None:
-            self.eye_left = Eye(self.gray_frame, self.landmarks, 0, self.calibration)
-            self.eye_right = Eye(self.gray_frame, self.landmarks, 1, self.calibration)
+            self.eye_left = Eye(self.gray_frame, self.landmarks, 0, self.calibration_left)
+            self.eye_right = Eye(self.gray_frame, self.landmarks, 1, self.calibration_right)
         else:
             self.eye_left = None
             self.eye_right = None
