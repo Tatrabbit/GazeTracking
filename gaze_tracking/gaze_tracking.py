@@ -77,40 +77,25 @@ class GazeTracking(object):
             y = self.eye_right.origin[1] + self.eye_right.pupil.y
             return (x, y)
 
-    def horizontal_ratio(self):
+    def horizontal_ratio(self, offset=0.0):
         """Returns a number between 0.0 and 1.0 that indicates the
         horizontal direction of the gaze. The extreme right is 0.0,
         the center is 0.5 and the extreme left is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.x / (self.eye_left.center[0] * 2 - 10)
-            pupil_right = self.eye_right.pupil.x / (self.eye_right.center[0] * 2 - 10)
+            pupil_left = self.eye_left.pupil.x / (self.eye_left.center[0] * 2 + offset)
+            pupil_right = self.eye_right.pupil.x / (self.eye_right.center[0] * 2 + offset)
             return (pupil_left + pupil_right) / 2
 
-    def vertical_ratio(self):
+    def vertical_ratio(self, offset=0.0):
         """Returns a number between 0.0 and 1.0 that indicates the
         vertical direction of the gaze. The extreme top is 0.0,
         the center is 0.5 and the extreme bottom is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.y / (self.eye_left.center[1] * 2 - 10)
-            pupil_right = self.eye_right.pupil.y / (self.eye_right.center[1] * 2 - 10)
+            pupil_left = self.eye_left.pupil.y / (self.eye_left.center[1] * 2 + offset)
+            pupil_right = self.eye_right.pupil.y / (self.eye_right.center[1] * 2 + offset)
             return (pupil_left + pupil_right) / 2
-
-    def is_right(self):
-        """Returns true if the user is looking to the right"""
-        if self.pupils_located:
-            return self.horizontal_ratio() <= 0.35
-
-    def is_left(self):
-        """Returns true if the user is looking to the left"""
-        if self.pupils_located:
-            return self.horizontal_ratio() >= 0.65
-
-    def is_center(self):
-        """Returns true if the user is looking to the center"""
-        if self.pupils_located:
-            return self.is_right() is not True and self.is_left() is not True
 
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
