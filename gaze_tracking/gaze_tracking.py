@@ -15,6 +15,7 @@ class GazeTracking(object):
 
     def __init__(self):
         self.frame = None
+        self.gray_frame = None
         self.eye_left = None
         self.eye_right = None
         self.calibration = Calibration()
@@ -41,13 +42,13 @@ class GazeTracking(object):
 
     def _analyze(self):
         """Detects the face and initialize Eye objects"""
-        frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
-        faces = self._face_detector(frame)
+        self.gray_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+        faces = self._face_detector(self.gray_frame)
 
         try:
-            landmarks = self._predictor(frame, faces[0])
-            self.eye_left = Eye(frame, landmarks, 0, self.calibration)
-            self.eye_right = Eye(frame, landmarks, 1, self.calibration)
+            landmarks = self._predictor(self.gray_frame, faces[0])
+            self.eye_left = Eye(self.gray_frame, landmarks, 0, self.calibration)
+            self.eye_right = Eye(self.gray_frame, landmarks, 1, self.calibration)
 
         except IndexError:
             self.eye_left = None
@@ -117,9 +118,9 @@ class GazeTracking(object):
             blinking_ratio = (self.eye_left.blinking + self.eye_right.blinking) / 2
             return blinking_ratio > 3.8
 
-    def annotated_frame(self):
+    def annotated_frame(self, use_gray=False):
         """Returns the main frame with pupils highlighted"""
-        frame = self.frame.copy()
+        frame = (self.gray_frame if use_gray else self.frame).copy()
 
         if self.pupils_located:
             color = (0, 255, 0)
