@@ -5,7 +5,6 @@ import dlib
 from .eye import Eye
 from .calibration import Calibration
 
-
 class GazeTracking(object):
     """
     This class tracks the user's gaze.
@@ -40,28 +39,30 @@ class GazeTracking(object):
         except Exception:
             return False
 
-    def _analyze(self):
-        """Detects the face and initialize Eye objects"""
-        self.gray_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+    def _predict_landmarks(self):
+        """Detects the face, and analyzes it for landmarks
+        """
         faces = self._face_detector(self.gray_frame)
+        if len(faces) == 0:
+            return
 
-        try:
-            landmarks = self._predictor(self.gray_frame, faces[0])
-            self.eye_left = Eye(self.gray_frame, landmarks, 0, self.calibration)
-            self.eye_right = Eye(self.gray_frame, landmarks, 1, self.calibration)
-
-        except IndexError:
-            self.eye_left = None
-            self.eye_right = None
+        return self._predictor(self.gray_frame, faces[0])
 
     def refresh(self, frame):
-        """Refreshes the frame and analyzes it.
-
+        """Refreshes the frame, detects the face, and analyzes it.
         Arguments:
             frame (numpy.ndarray): The frame to analyze
         """
         self.frame = frame
-        self._analyze()
+        self.gray_frame = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
+
+        self.landmarks = self._predict_landmarks()
+        if self.landmarks is not None:
+            self.eye_left = Eye(self.gray_frame, self.landmarks, 0, self.calibration)
+            self.eye_right = Eye(self.gray_frame, self.landmarks, 1, self.calibration)
+        else:
+            self.eye_left = None
+            self.eye_right = None
 
     def pupil_left_coords(self):
         """Returns the coordinates of the left pupil"""
