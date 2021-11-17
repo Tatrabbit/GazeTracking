@@ -33,6 +33,8 @@ class Calibration(object):
         frame = frame[5:-5, 5:-5]
         height, width = frame.shape[:2]
         nb_pixels = height * width
+        if nb_pixels == 0:
+            return 0
         nb_blacks = nb_pixels - cv2.countNonZero(frame)
         return nb_blacks / nb_pixels
 
