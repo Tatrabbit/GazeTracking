@@ -71,7 +71,7 @@ class Calibration(object):
         """
         threshold = self.find_best_threshold(eye_frame)
 
-        if side == 0:
-            self.thresholds_left.append(threshold)
-        elif side == 1:
-            self.thresholds_right.append(threshold)
+        thresholds = self.thresholds_left if (side == 0) else self.thresholds_right
+        thresholds.append(threshold)
+        if len(thresholds) > self.nb_frames:
+            thresholds.pop(0)
