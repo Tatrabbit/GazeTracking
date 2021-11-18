@@ -92,42 +92,10 @@ Pass the frame to analyze (numpy.ndarray). If you want to work with a video stre
 ### Position of the left pupil
 
 ```python
-gaze.pupil_left_coords()
+gaze.pupil_coords(index)
 ```
 
-Returns the coordinates (x,y) of the left pupil.
-
-### Position of the right pupil
-
-```python
-gaze.pupil_right_coords()
-```
-
-Returns the coordinates (x,y) of the right pupil.
-
-### Looking to the left
-
-```python
-gaze.is_left()
-```
-
-Returns `True` if the user is looking to the left.
-
-### Looking to the right
-
-```python
-gaze.is_right()
-```
-
-Returns `True` if the user is looking to the right.
-
-### Looking at the center
-
-```python
-gaze.is_center()
-```
-
-Returns `True` if the user is looking at the center.
+Returns the coordinates (x,y) of the pupil. For the left pupil, specify index=0. For the right, index=1.
 
 ### Horizontal direction of the gaze
 
