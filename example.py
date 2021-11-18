@@ -19,19 +19,21 @@ while True:
     frame = gaze.annotated_frame()
     text = ""
 
+    ratio = gaze.horizontal_ratio()
     if gaze.is_blinking():
         text = "Blinking"
-    elif gaze.is_right():
-        text = "Looking right"
-    elif gaze.is_left():
-        text = "Looking left"
-    elif gaze.is_center():
-        text = "Looking center"
+    elif ratio is not None:
+        if ratio < 0.35:
+            text = "Looking right"
+        elif ratio > 0.65:
+            text = "Looking left"
+        else:
+            text = "Looking center"
 
     cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)
 
-    left_pupil = gaze.pupil_coords()
-    right_pupil = gaze.pupil_coords()
+    left_pupil = gaze.pupil_coords(0)
+    right_pupil = gaze.pupil_coords(1)
     cv2.putText(frame, "Left pupil:  " + str(left_pupil), (90, 130), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
     cv2.putText(frame, "Right pupil: " + str(right_pupil), (90, 165), cv2.FONT_HERSHEY_DUPLEX, 0.9, (147, 58, 31), 1)
 
