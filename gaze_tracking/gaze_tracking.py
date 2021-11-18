@@ -81,18 +81,21 @@ class GazeTracking(object):
             self.eye_left = None
             self.eye_right = None
 
-    def pupil_left_coords(self):
+    def pupil_coords(self, index):
         """Returns the coordinates of the left pupil"""
-        if self.pupils_located:
-            x = self.eye_left.origin[0] + self.eye_left.pupil.x
-            y = self.eye_left.origin[1] + self.eye_left.pupil.y
-            return (x, y)
+        eye = None
+        # TODO It would simplify these things to store eye_left and eye_right inside a tuple rather than
+        #      two variables.
+        if index == 0:
+            eye = self.eye_left
+        elif index == 1:
+            eye = self.eye_right
+        else:
+            raise IndexError()
 
-    def pupil_right_coords(self):
-        """Returns the coordinates of the right pupil"""
         if self.pupils_located:
-            x = self.eye_right.origin[0] + self.eye_right.pupil.x
-            y = self.eye_right.origin[1] + self.eye_right.pupil.y
+            x = eye.origin[0] + eye.pupil.x
+            y = eye.origin[1] + eye.pupil.y
             return (x, y)
 
     def horizontal_ratio(self, offset=0.0):
@@ -127,8 +130,8 @@ class GazeTracking(object):
 
         if self.pupils_located:
             color = (0, 255, 0)
-            x_left, y_left = self.pupil_left_coords()
-            x_right, y_right = self.pupil_right_coords()
+            x_left, y_left = self.pupil_coords(0)
+            x_right, y_right = self.pupil_coords(1)
             cv2.line(frame, (x_left - 5, y_left), (x_left + 5, y_left), color)
             cv2.line(frame, (x_left, y_left - 5), (x_left, y_left + 5), color)
             cv2.line(frame, (x_right - 5, y_right), (x_right + 5, y_right), color)
