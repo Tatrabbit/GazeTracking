@@ -12,6 +12,7 @@ class Calibration(object):
     def __init__(self):
         self.nb_frames = 20
         self.thresholds = []
+        self._average_iris_size = 0.48
 
     def is_complete(self):
         """Returns true if the calibration is completed"""
@@ -21,6 +22,18 @@ class Calibration(object):
         """Returns the threshold value for this eye
         """
         return int(sum(self.thresholds) / len(self.thresholds))
+
+    def get_average_iris_size(self):
+        return self._average_iris_size
+
+    def set_average_iris_size(self, value):
+        if self._average_iris_size == value:
+            return
+
+        self._average_iris_size = value
+        self.thresholds.clear()
+
+    average_iris_size = property(get_average_iris_size, set_average_iris_size)
 
     @staticmethod
     def iris_size(frame):
@@ -38,22 +51,20 @@ class Calibration(object):
         nb_blacks = nb_pixels - cv2.countNonZero(frame)
         return nb_blacks / nb_pixels
 
-    @staticmethod
-    def find_best_threshold(eye_frame):
+    def find_best_threshold(self, eye_frame):
         """Calculates the optimal threshold to binarize the
         frame for the given eye.
 
         Argument:
             eye_frame (numpy.ndarray): Frame of the eye to be analyzed
         """
-        average_iris_size = 0.48
         trials = {}
 
         for threshold in range(5, 100, 5):
             iris_frame = Pupil.image_processing(eye_frame, threshold)
             trials[threshold] = Calibration.iris_size(iris_frame)
 
-        best_threshold, iris_size = min(trials.items(), key=(lambda p: abs(p[1] - average_iris_size)))
+        best_threshold, iris_size = min(trials.items(), key=(lambda p: abs(p[1] - self.average_iris_size)))
         return best_threshold
 
     def evaluate(self, eye_frame):

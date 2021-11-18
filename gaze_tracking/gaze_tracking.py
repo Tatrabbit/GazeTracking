@@ -31,6 +31,15 @@ class GazeTracking(object):
         model_path = os.path.abspath(os.path.join(cwd, "trained_models/shape_predictor_68_face_landmarks.dat"))
         self._predictor = dlib.shape_predictor(model_path)
 
+    def get_average_iris_size(self):
+        return self._calibration_left.get_average_iris_size()
+
+    def set_average_iris_size(self, value):
+        self._calibration_left.set_average_iris_size(value)
+        self._calibration_right.set_average_iris_size(value)
+
+    average_iris_size = property(get_average_iris_size, set_average_iris_size)
+
     @property
     def pupils_located(self):
         """Check that the pupils have been located"""
