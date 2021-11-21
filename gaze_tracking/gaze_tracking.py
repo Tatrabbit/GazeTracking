@@ -4,7 +4,6 @@ import cv2
 import dlib
 from .eye import Eye
 from .head_angle import HeadAngle
-from .calibration import Calibration
 
 class GazeTracking(object):
     """
@@ -20,9 +19,6 @@ class GazeTracking(object):
         self.eye_right = None
         self.head = HeadAngle()
 
-        self._calibration_left = Calibration()
-        self._calibration_right = Calibration()
-
         # _face_detector is used to detect faces
         self._face_detector = dlib.get_frontal_face_detector()
 
@@ -30,15 +26,6 @@ class GazeTracking(object):
         cwd = os.path.abspath(os.path.dirname(__file__))
         model_path = os.path.abspath(os.path.join(cwd, "trained_models/shape_predictor_68_face_landmarks.dat"))
         self._predictor = dlib.shape_predictor(model_path)
-
-    def get_average_iris_size(self):
-        return self._calibration_left.get_average_iris_size()
-
-    def set_average_iris_size(self, value):
-        self._calibration_left.set_average_iris_size(value)
-        self._calibration_right.set_average_iris_size(value)
-
-    average_iris_size = property(get_average_iris_size, set_average_iris_size)
 
     @property
     def pupils_located(self):
@@ -75,8 +62,8 @@ class GazeTracking(object):
 
         # TODO: Use the tilt of the head to rotate the frame
         if self.landmarks is not None:
-            self.eye_left = Eye(self.gray_frame, self.landmarks, 0, self._calibration_left)
-            self.eye_right = Eye(self.gray_frame, self.landmarks, 1, self._calibration_right)
+            self.eye_left = Eye(self.gray_frame, self.landmarks, 0)
+            self.eye_right = Eye(self.gray_frame, self.landmarks, 1)
         else:
             self.eye_left = None
             self.eye_right = None

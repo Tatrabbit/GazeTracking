@@ -1,54 +1,43 @@
 import numpy as np
 import cv2
 
-
 class Pupil(object):
     """
     This class detects the iris of an eye and estimates
     the position of the pupil
     """
 
-    def __init__(self, eye_frame, threshold):
-        self.iris_frame = None
-        self.threshold = threshold
-        self.x = None
-        self.y = None
+    _erode_kernel = np.ones((3, 0), np.uint8)
 
-        self.detect_iris(eye_frame)
+    def __init__(self, eye_frame):
+        self.frame = Pupil._process_image(eye_frame)
+
+        x = Pupil._min_index(0, self.frame)
+        y = Pupil._min_index(1, self.frame)
+        self.center = (x, y)
 
     @staticmethod
-    def image_processing(eye_frame, threshold):
-        """Performs operations on the eye frame to isolate the iris
+    def _process_image(eye_frame):
+        """Performs operations on the eye frame to detect the pupil
 
         Arguments:
             eye_frame (numpy.ndarray): Frame containing an eye and nothing else
-            threshold (int): Threshold value used to binarize the eye frame
 
         Returns:
-            A frame with a single element representing the iris
+            An (x, y) tuple of the position of the "darkest" position in the input frame
         """
-        kernel = np.ones((3, 3), np.uint8)
-        new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
-        new_frame = cv2.erode(new_frame, kernel, iterations=3)
-        new_frame = cv2.threshold(new_frame, threshold, 255, cv2.THRESH_BINARY)[1]
+
+        # TODO play with filters to improve outcome
+        new_frame = eye_frame.copy()
+        #new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
+        #new_frame = cv2.bilateralFilter(eye_frame, 10, 15, 15)
+        #new_frame = cv2.threshold(new_frame, 80, 255, cv2.THRESH_TRUNC)[1]
+        #new_frame = cv2.erode(new_frame, Pupil._erode_kernel, iterations=3)
 
         return new_frame
 
-    def detect_iris(self, eye_frame):
-        """Detects the iris and estimates the position of the iris by
-        calculating the centroid.
-
-        Arguments:
-            eye_frame (numpy.ndarray): Frame containing an eye and nothing else
-        """
-        self.iris_frame = self.image_processing(eye_frame, self.threshold)
-
-        contours, _ = cv2.findContours(self.iris_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
-        contours = sorted(contours, key=cv2.contourArea)
-
-        try:
-            moments = cv2.moments(contours[-2])
-            self.x = int(moments['m10'] / moments['m00'])
-            self.y = int(moments['m01'] / moments['m00'])
-        except (IndexError, ZeroDivisionError):
-            pass
+    @staticmethod
+    def _min_index(axis, frame):
+        sum = np.sum(frame, axis)
+        min = np.min(sum)
+        return np.where(sum == min)[0][0]

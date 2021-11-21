@@ -2,7 +2,7 @@ import math
 import numpy as np
 import cv2
 from .pupil import Pupil
-
+import sys
 
 class Eye(object):
     """
@@ -13,7 +13,7 @@ class Eye(object):
     LEFT_EYE_POINTS = [36, 37, 38, 39, 40, 41]
     RIGHT_EYE_POINTS = [42, 43, 44, 45, 46, 47]
 
-    def __init__(self, original_frame, landmarks, side, calibration):
+    def __init__(self, original_frame, landmarks, side):
         self.frame = None
         self.origin = None
         self.center = None
@@ -22,7 +22,7 @@ class Eye(object):
         self.width = None
         self.height = None
 
-        self._analyze(original_frame, landmarks, side, calibration)
+        self._analyze(original_frame, landmarks, side)
 
     @staticmethod
     def _middle_point(p1, p2):
@@ -66,7 +66,12 @@ class Eye(object):
         self.origin = (min_x, min_y)
 
         height, width = self.frame.shape[:2]
+
         self.center = (width / 2, height / 2)
+
+        if height == 0 or width == 0:
+            sys.stderr.write("Frame has 0 size: (%d, %d)" % (width, height))
+            self.frame = None
 
     def _blinking_ratio(self, landmarks, points):
         """Calculates a ratio that can indicate whether an eye is closed or not.
@@ -94,7 +99,7 @@ class Eye(object):
 
         return ratio
 
-    def _analyze(self, original_frame, landmarks, side, calibration):
+    def _analyze(self, original_frame, landmarks, side):
         """Detects and isolates the eye in a new frame, sends data to the calibration
         and initializes Pupil object.
 
@@ -114,6 +119,4 @@ class Eye(object):
         self.blinking = self._blinking_ratio(landmarks, points)
         self._isolate(original_frame, landmarks, points)
 
-        calibration.evaluate(self.frame)
-        threshold = calibration.threshold()
-        self.pupil = Pupil(self.frame, threshold)
+        self.pupil = Pupil(self.frame)
