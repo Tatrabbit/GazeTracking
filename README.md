@@ -1,7 +1,6 @@
 # Gaze Tracking
 
-![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg) ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 This is a Python (2 and 3) library that provides a **webcam-based eye tracking system**. It gives you the exact position of the pupils and the gaze direction, in real time.
 
