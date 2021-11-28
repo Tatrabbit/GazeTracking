@@ -31,10 +31,10 @@ class GazeTracking(object):
     def pupils_located(self):
         """Check that the pupils have been located"""
         try:
-            int(self.eye_left.pupil.x)
-            int(self.eye_left.pupil.y)
-            int(self.eye_right.pupil.x)
-            int(self.eye_right.pupil.y)
+            int(self.eye_left.pupil.center[0])
+            int(self.eye_left.pupil.center[1])
+            int(self.eye_right.pupil.center[0])
+            int(self.eye_right.pupil.center[1])
             return True
         except Exception:
             return False
@@ -81,8 +81,8 @@ class GazeTracking(object):
             raise IndexError()
 
         if self.pupils_located:
-            x = eye.origin[0] + eye.pupil.x
-            y = eye.origin[1] + eye.pupil.y
+            x = eye.origin[0] + eye.pupil.center[0]
+            y = eye.origin[1] + eye.pupil.center[1]
             return (x, y)
 
     def horizontal_ratio(self, offset=0.0):
@@ -91,8 +91,8 @@ class GazeTracking(object):
         the center is 0.5 and the extreme left is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.x / (self.eye_left.center[0] * 2 + offset)
-            pupil_right = self.eye_right.pupil.x / (self.eye_right.center[0] * 2 + offset)
+            pupil_left = self.eye_left.pupil.center[0] / (self.eye_left.center[0] * 2 + offset)
+            pupil_right = self.eye_right.pupil.center[0] / (self.eye_right.center[0] * 2 + offset)
             return (pupil_left + pupil_right) / 2
 
     def vertical_ratio(self, offset=0.0):
@@ -101,10 +101,11 @@ class GazeTracking(object):
         the center is 0.5 and the extreme bottom is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.y / (self.eye_left.center[1] * 2 + offset)
-            pupil_right = self.eye_right.pupil.y / (self.eye_right.center[1] * 2 + offset)
+            pupil_left = self.eye_left.pupil.center[1] / (self.eye_left.center[1] * 2 + offset)
+            pupil_right = self.eye_right.pupil.center[1] / (self.eye_right.center[1] * 2 + offset)
             return (pupil_left + pupil_right) / 2
 
+    @property
     def is_blinking(self):
         """Returns true if the user closes his eyes"""
         if self.pupils_located:
