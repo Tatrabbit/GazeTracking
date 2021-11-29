@@ -85,25 +85,27 @@ class GazeTracking(object):
             y = eye.origin[1] + eye.pupil.center[1]
             return (x, y)
 
-    def horizontal_ratio(self, offset=0.0):
+    @property
+    def horizontal_ratio(self):
         """Returns a number between 0.0 and 1.0 that indicates the
         horizontal direction of the gaze. The extreme right is 0.0,
         the center is 0.5 and the extreme left is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.center[0] / (self.eye_left.center[0] * 2 + offset)
-            pupil_right = self.eye_right.pupil.center[0] / (self.eye_right.center[0] * 2 + offset)
-            return (pupil_left + pupil_right) / 2
+            left = self.eye_left.pupil.horizontal_ratio
+            right = self.eye_right.pupil.horizontal_ratio
+            return (left + right) * 0.5
 
-    def vertical_ratio(self, offset=0.0):
+    @property
+    def vertical_ratio(self):
         """Returns a number between 0.0 and 1.0 that indicates the
         vertical direction of the gaze. The extreme top is 0.0,
         the center is 0.5 and the extreme bottom is 1.0
         """
         if self.pupils_located:
-            pupil_left = self.eye_left.pupil.center[1] / (self.eye_left.center[1] * 2 + offset)
-            pupil_right = self.eye_right.pupil.center[1] / (self.eye_right.center[1] * 2 + offset)
-            return (pupil_left + pupil_right) / 2
+            left = self.eye_left.pupil.vertical_ratio
+            right = self.eye_right.pupil.vertical_ratio
+            return (left + right) * 0.5
 
     @property
     def is_blinking(self):

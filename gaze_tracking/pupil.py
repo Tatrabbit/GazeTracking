@@ -16,6 +16,18 @@ class Pupil(object):
         y = Pupil._min_index(1, self.frame)
         self.center = (x, y)
 
+    @property
+    def horizontal_ratio(self):
+        width = float(self.frame.shape[1])
+        offset = float(self.center[0]) / width
+        return offset - 0.5
+
+    @property
+    def vertical_ratio(self):
+        height = float(self.frame.shape[0])
+        offset = float(self.center[1]) / height
+        return offset - 0.5
+
     @staticmethod
     def _process_image(eye_frame):
         """Performs operations on the eye frame to detect the pupil
